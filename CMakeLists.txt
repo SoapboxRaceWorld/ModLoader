@@ -3,10 +3,11 @@ project(ModLoader)
 
 set(CMAKE_CXX_STANDARD 14)
 find_package(ZLIB)
+find_package(nlohmann_json CONFIG REQUIRED)
 find_package(cpr CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
-add_library(ModLoader SHARED src/library.cpp src/stdafx.hpp src/types/server_information.hpp)
-target_link_libraries(ModLoader PRIVATE cpr ZLIB::ZLIB fmt::fmt)
+add_library(ModLoader SHARED src/library.cpp src/stdafx.hpp src/server/modding_info.hpp)
+target_link_libraries(ModLoader PRIVATE cpr ZLIB::ZLIB fmt::fmt nlohmann_json)
 set_target_properties(
         ModLoader
         PROPERTIES
