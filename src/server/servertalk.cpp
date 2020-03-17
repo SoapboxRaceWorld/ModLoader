@@ -12,7 +12,7 @@
 server_talk::server_talk(std::string server_address) : m_server_address_(std::move(server_address)) {
 }
 
-std::shared_ptr<modding_info> server_talk::get_modding_info() {
+std::shared_ptr<server::modding_info> server_talk::get_modding_info() {
     auto r = cpr::Get(cpr::Url{m_server_address_ + "/Modding/GetModInfo"});
 
     if (r.error) {
@@ -23,7 +23,8 @@ std::shared_ptr<modding_info> server_talk::get_modding_info() {
         return nullptr;
     }
 
-    json j(r.text);
 
-    return std::make_shared<modding_info>(j.get<modding_info>());
+    nlohmann::json j = nlohmann::json::parse(r.text);
+
+    return std::make_shared<server::modding_info>(j.get<server::modding_info>());
 }

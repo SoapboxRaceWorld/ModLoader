@@ -1,23 +1,37 @@
 #include "stdafx.hpp"
+#include "utils.hpp"
+#include "server/servertalk.hpp"
 #include <shellapi.h>
+#include <fmt/format.h>
 
 BOOL WINAPI InitializeModLoader() {
     LPWSTR *szArgList;
     int argCount;
 
     if ((szArgList = CommandLineToArgvW(GetCommandLineW(), &argCount)) == nullptr) {
-        MessageBoxW(nullptr, L"Failed to parse command line", L"Error", MB_OK);
+        MessageBoxW(nullptr, L"Failed to parse command line", L"Error", MB_OK | MB_ICONERROR);
         return FALSE;
     }
 
     if (argCount != 5) {
-        MessageBoxW(nullptr, L"Invalid command line", L"Error", MB_OK);
+        MessageBoxW(nullptr, L"Invalid command line", L"Error", MB_OK | MB_ICONERROR);
         return FALSE;
     }
 
     const std::wstring server_url = szArgList[2];
 
-    // TODO: get mod info
+    try {
+        const std::string cleaned_server_url = utf8_from_wstring(server_url);
+        const auto server_talker = std::make_shared<server_talk>(cleaned_server_url);
+        const auto modding_info = server_talker->get_modding_info();
+
+        if (modding_info) {
+            // TODO: load mods
+        }
+    } catch (const std::exception& exception) {
+        MessageBoxA(nullptr, exception.what(), "Error", MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
 
     return TRUE;
 }

@@ -7,22 +7,17 @@
 
 #include <nlohmann/json.hpp>
 
-using nlohmann::json;
+namespace server {
+    using nlohmann::json;
 
-struct modding_info {
-    std::string basePath;
-    std::string serverID;
-    std::vector<std::string> features;
-};
+    struct modding_info {
+        std::string basePath;
+        std::string serverID;
+        std::vector<std::string> features;
+    };
 
-void to_json(json& j, const modding_info& mi) {
-    j = json{{"basePath", mi.basePath}, {"serverID", mi.serverID}, {"features", mi.features}};
-}
-
-void from_json(const json& j, modding_info& mi) {
-    j.at("basePath").get_to(mi.basePath);
-    j.at("serverID").get_to(mi.serverID);
-    j.at("features").get_to(mi.features);
+    void to_json(json& j, const modding_info& mi);
+    void from_json(const json& j, modding_info& mi);
 }
 
 #endif //MODLOADER_MODDING_INFO_HPP

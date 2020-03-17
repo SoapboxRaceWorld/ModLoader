@@ -13,7 +13,7 @@ public:
     explicit server_talk(std::string  server_address);
     ~server_talk() = default;
 
-    std::shared_ptr<modding_info> get_modding_info();
+    std::shared_ptr<server::modding_info> get_modding_info();
 private:
     std::string m_server_address_;
 };
