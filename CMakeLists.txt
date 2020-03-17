@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(ZLIB)
 find_package(cpr CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
-add_library(ModLoader SHARED library.cpp stdafx.h)
+add_library(ModLoader SHARED src/library.cpp src/stdafx.h)
 target_link_libraries(ModLoader PRIVATE cpr ZLIB::ZLIB fmt::fmt)
 set_target_properties(
         ModLoader
