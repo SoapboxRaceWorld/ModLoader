@@ -6,7 +6,7 @@ find_package(ZLIB)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(cpr CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
-add_library(ModLoader SHARED src/library.cpp src/stdafx.hpp src/server/modding_info.hpp)
+add_library(ModLoader SHARED src/library.cpp src/stdafx.hpp src/server/modding_info.hpp src/server/servertalk.cpp src/server/servertalk.hpp src/server/servertalkexception.hpp)
 target_link_libraries(ModLoader PRIVATE cpr ZLIB::ZLIB fmt::fmt nlohmann_json)
 set_target_properties(
         ModLoader
