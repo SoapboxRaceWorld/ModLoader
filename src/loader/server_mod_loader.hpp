@@ -9,12 +9,13 @@
 
 class server_mod_loader {
 public:
-    explicit server_mod_loader(std::string  server_id);
+    explicit server_mod_loader(std::string &server_id);
+
     ~server_mod_loader() = default;
 
     void load_packages();
 private:
-    std::string m_server_id_;
+    std::string &m_server_id_;
 };
 
 

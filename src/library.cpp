@@ -34,7 +34,7 @@ BOOL WINAPI InitializeModLoader() {
         }
     } catch (const std::exception& exception) {
         MessageBoxA(nullptr, exception.what(), "Error", MB_OK | MB_ICONERROR);
-        return FALSE;
+        ExitProcess(1);
     }
 
     return TRUE;

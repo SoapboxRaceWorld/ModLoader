@@ -4,17 +4,19 @@
 
 #include "mod_package_loader.hpp"
 #include "mod_package_header.hpp"
+#include "../utils.hpp"
+#include "../md5.hpp"
 #include <fstream>
 #include <utility>
 #include <bitextractor.hpp>
-#include <bitexception.hpp>
+#include <fmt/format.h>
 
 static const unsigned char key_xor_table[] = {
         0x94, 0xce, 0xc3, 0xae, 0x73, 0xf9, 0xf1, 0xb9
 };
 
-mod_package_loader::mod_package_loader(fs::path path) : m_path_(std::move(path)) {
-
+mod_package_loader::mod_package_loader(std::string &server_id, fs::path &path) : m_server_id_(server_id),
+                                                                                 m_path_(path) {
 }
 
 std::shared_ptr<mod_package> mod_package_loader::load() {
@@ -52,6 +54,7 @@ std::shared_ptr<mod_package> mod_package_loader::load() {
         stream.read((char *) &key_length, sizeof(key_length));
 
         if (key_length != 32) {
+            // standard ModPackager always uses a 32-byte (256-bit) key, so we shouldn't expect a different key length
             return nullptr;
         }
 
@@ -70,6 +73,12 @@ std::shared_ptr<mod_package> mod_package_loader::load() {
     bit7z::Bit7zLibrary lib(L"7z.dll");
     bit7z::BitExtractor extractor(lib, bit7z::BitFormat::Zip);
 
+    if (!archive_key.empty()) {
+        extractor.setPassword(utf8_to_wstring(archive_key));
+    }
+
+    const auto extraction_path = fs::current_path() / ".data" / md5(m_server_id_);
+    extractor.extract(m_path_.wstring(), extraction_path.wstring());
 
     return nullptr;
 }

@@ -12,7 +12,7 @@
 
 namespace fs = std::filesystem;
 
-server_mod_loader::server_mod_loader(std::string server_id) : m_server_id_(std::move(server_id)) {
+server_mod_loader::server_mod_loader(std::string &server_id) : m_server_id_(server_id) {
 }
 
 void server_mod_loader::load_packages() {
@@ -21,17 +21,19 @@ void server_mod_loader::load_packages() {
 
     if (fs::is_directory(server_mod_directory)) {
         for (const auto &server_mod_directory_entry : fs::directory_iterator(server_mod_directory)) {
-            const auto &path = server_mod_directory_entry.path();
+            auto &path = server_mod_directory_entry.path();
 
             if (path.extension() != ".mods") {
-                throw mod_loader_exception(fmt::format("Unexpected file detected: {0}", path.filename().generic_string()));
+                throw mod_loader_exception(
+                        fmt::format("Unexpected file detected: {0}", path.filename().generic_string()));
             }
 
-            const auto loader = std::make_shared<mod_package_loader>(path);
+            const auto loader = std::make_shared<mod_package_loader>(m_server_id_, const_cast<fs::path &>(path));
             const auto package = loader->load();
 
             if (!package) {
-                throw mod_loader_exception(fmt::format("Could not load package: {0}", path.filename().generic_string()));
+                throw mod_loader_exception(
+                        fmt::format("Could not load package: {0}", path.filename().generic_string()));
             }
         }
     } else {
