@@ -82,6 +82,7 @@ std::shared_ptr<mod_package> mod_package_loader::load() {
     }
 
     const auto extraction_path = fs::current_path() / ".data" / md5(m_server_id_);
+    fs::create_directories(extraction_path);
     extractor.extract(m_path_.wstring(), extraction_path.wstring());
 
     std::vector<std::shared_ptr<mod_package_item>> package_items;
