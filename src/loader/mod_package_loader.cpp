@@ -90,7 +90,8 @@ std::shared_ptr<mod_package> mod_package_loader::load() {
         std::wstring path = item.path();
         std::filesystem::path item_extracted_path = extraction_path / path;
         auto package_item = std::make_shared<mod_package_item>(path, item_extracted_path,
-                                                               mod_package_item_type::Directory);
+                                                               item.isDir() ? mod_package_item_type::Directory
+                                                                            : mod_package_item_type::File);
 
         package_items.emplace_back(package_item);
     }
