@@ -35,9 +35,6 @@ void server_mod_loader::load_packages() {
                 throw mod_loader_exception(
                         fmt::format("Could not load package: {0}", path.filename().generic_string()));
             }
-
-            MessageBoxA(nullptr, fmt::format("Loaded {0} entries from {1}", package->get_items().size(),
-                                             package->get_name()).c_str(), "epic", MB_OK);
         }
     } else {
         throw mod_loader_exception(fmt::format("Could not find mods for server: {0}", m_server_id_));
