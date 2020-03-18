@@ -12,6 +12,7 @@ namespace fs = std::filesystem;
 enum mod_file_link_type {
     FileLink = 0,
     DirectoryLink = 1,
+    None = -1
 };
 
 struct mod_file_link_info {

@@ -22,7 +22,8 @@ BOOL WINAPI InitializeModLoader() {
     }
 
     const std::wstring server_url = szArgList[2];
-    const auto linker = std::make_shared<mod_file_linker>();
+    std::shared_ptr<mod_file_linker> linker = std::make_shared<mod_file_linker>();
+    std::vector<mod_file_link_info> links;
 
     try {
         const std::string cleaned_server_url = utf8_from_wstring(server_url);
@@ -35,12 +36,15 @@ BOOL WINAPI InitializeModLoader() {
 
             for (std::shared_ptr<mod_package> &package : packages) {
                 for (const std::shared_ptr<mod_package_item> &package_entry : package->get_items()) {
-                    linker->add_link(package_entry);
+                    links.emplace_back(linker->add_link(package_entry));
                 }
             }
+
+            linker->write_link_info_file(".links");
         }
-    } catch (const std::exception& exception) {
+    } catch (const std::exception &exception) {
         MessageBoxA(nullptr, exception.what(), "Error", MB_OK | MB_ICONERROR);
+        linker->revert_links(links);
         ExitProcess(1);
     }
 
@@ -54,6 +58,7 @@ BOOL WINAPI ShutDownModLoader() {
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+
 BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
     switch (fdwReason) {
         case DLL_PROCESS_ATTACH:
@@ -68,4 +73,5 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 
     return TRUE;
 }
+
 #pragma clang diagnostic pop
