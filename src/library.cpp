@@ -29,8 +29,9 @@ BOOL WINAPI InitializeModLoader() {
 
         if (modding_info) {
             const auto loader = std::make_shared<server_mod_loader>(modding_info->serverID);
+            const auto packages = loader->load_packages();
 
-            loader->load_packages();
+            // TODO: link files
         }
     } catch (const std::exception& exception) {
         MessageBoxA(nullptr, exception.what(), "Error", MB_OK | MB_ICONERROR);

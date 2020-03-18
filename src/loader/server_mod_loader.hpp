@@ -5,7 +5,9 @@
 #ifndef MODLOADER_SERVER_MOD_LOADER_HPP
 #define MODLOADER_SERVER_MOD_LOADER_HPP
 
-#include "../stdafx.hpp"
+#include <vector>
+#include <memory>
+#include "mod_package.hpp"
 
 class server_mod_loader {
 public:
@@ -13,7 +15,8 @@ public:
 
     ~server_mod_loader() = default;
 
-    void load_packages();
+    std::vector<std::shared_ptr<mod_package>> load_packages();
+
 private:
     std::string &m_server_id_;
 };
