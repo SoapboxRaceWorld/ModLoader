@@ -33,7 +33,6 @@ void server_mod_loader::load_packages() {
             if (!package) {
                 throw mod_loader_exception(fmt::format("Could not load package: {0}", path.filename().generic_string()));
             }
-            MessageBoxA(nullptr, path.string().c_str(), "ayy!!", MB_OK);
         }
     } else {
         throw mod_loader_exception(fmt::format("Could not find mods for server: {0}", m_server_id_));

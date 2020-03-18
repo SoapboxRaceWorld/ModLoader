@@ -12,10 +12,12 @@ namespace fs = std::filesystem;
 
 class mod_package_loader {
 public:
-    explicit mod_package_loader(const fs::path& path);
+    explicit mod_package_loader(fs::path path);
+
     ~mod_package_loader() = default;
 
     std::shared_ptr<mod_package> load();
+
 private:
     fs::path m_path_;
 };
