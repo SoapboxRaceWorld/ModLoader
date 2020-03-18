@@ -6,8 +6,9 @@
 #define MODLOADER_SERVERTALKEXCEPTION_HPP
 
 #include <exception>
+#include "../stdafx.hpp"
 
-class server_talk_exception : std::exception {
+class server_talk_exception : public std::exception {
 public:
     explicit server_talk_exception(const char *const message) : exception(message) {}
     explicit server_talk_exception(const std::string& message) : exception(message.c_str()) {}
