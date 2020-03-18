@@ -2,9 +2,9 @@
 #include "utils.hpp"
 #include "server/servertalk.hpp"
 #include "loader/server_mod_loader.hpp"
+#include "linker/mod_file_linker.hpp"
 
 #include <shellapi.h>
-#include <fmt/format.h>
 
 BOOL WINAPI InitializeModLoader() {
     LPWSTR *szArgList;
@@ -21,6 +21,7 @@ BOOL WINAPI InitializeModLoader() {
     }
 
     const std::wstring server_url = szArgList[2];
+    const auto linker = std::make_shared<mod_file_linker>();
 
     try {
         const std::string cleaned_server_url = utf8_from_wstring(server_url);
@@ -31,7 +32,11 @@ BOOL WINAPI InitializeModLoader() {
             const auto loader = std::make_shared<server_mod_loader>(modding_info->serverID);
             const auto packages = loader->load_packages();
 
-            // TODO: link files
+            for (const auto &package : packages) {
+                for (const auto &package_entry : package->get_items()) {
+                    linker->add_link(package_entry);
+                }
+            }
         }
     } catch (const std::exception& exception) {
         MessageBoxA(nullptr, exception.what(), "Error", MB_OK | MB_ICONERROR);

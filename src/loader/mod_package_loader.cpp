@@ -82,13 +82,15 @@ std::shared_ptr<mod_package> mod_package_loader::load() {
     }
 
     const auto extraction_path = fs::current_path() / ".data" / md5(m_server_id_);
-//    extractor.extract(m_path_.wstring(), extraction_path.wstring());
+    extractor.extract(m_path_.wstring(), extraction_path.wstring());
 
     std::vector<std::shared_ptr<mod_package_item>> package_items;
 
     for (auto &item : arc.items()) {
         std::wstring path = item.path();
-        auto package_item = std::make_shared<mod_package_item>(path, mod_package_item_type::Directory);
+        std::filesystem::path item_extracted_path = extraction_path / path;
+        auto package_item = std::make_shared<mod_package_item>(path, item_extracted_path,
+                                                               mod_package_item_type::Directory);
 
         package_items.emplace_back(package_item);
     }
