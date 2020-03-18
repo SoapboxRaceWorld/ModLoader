@@ -17,7 +17,7 @@ public:
 
     void add_link(std::shared_ptr<mod_package_item> item);
 
-    void write_link_info_file(const fs::path &destination);
+    void write_link_info_file(fs::path destination);
 
 private:
     std::vector<mod_file_link_info> m_link_info_list_;

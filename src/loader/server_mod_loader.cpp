@@ -37,6 +37,8 @@ std::vector<std::shared_ptr<mod_package>> server_mod_loader::load_packages() {
                         fmt::format("Could not load package: {0}", path.filename().generic_string()));
             }
 
+            auto items = package->get_items();
+
             packages.emplace_back(package);
         }
     } else {

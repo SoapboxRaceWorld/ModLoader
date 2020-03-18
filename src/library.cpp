@@ -5,6 +5,7 @@
 #include "linker/mod_file_linker.hpp"
 
 #include <shellapi.h>
+#include <iostream>
 
 BOOL WINAPI InitializeModLoader() {
     LPWSTR *szArgList;
@@ -30,10 +31,10 @@ BOOL WINAPI InitializeModLoader() {
 
         if (modding_info) {
             const auto loader = std::make_shared<server_mod_loader>(modding_info->serverID);
-            const auto packages = loader->load_packages();
+            std::vector<std::shared_ptr<mod_package>> packages = loader->load_packages();
 
-            for (const auto &package : packages) {
-                for (const auto &package_entry : package->get_items()) {
+            for (std::shared_ptr<mod_package> &package : packages) {
+                for (const std::shared_ptr<mod_package_item> &package_entry : package->get_items()) {
                     linker->add_link(package_entry);
                 }
             }
