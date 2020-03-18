@@ -1,6 +1,8 @@
 #include "stdafx.hpp"
 #include "utils.hpp"
 #include "server/servertalk.hpp"
+#include "loader/server_mod_loader.hpp"
+
 #include <shellapi.h>
 #include <fmt/format.h>
 
@@ -26,7 +28,9 @@ BOOL WINAPI InitializeModLoader() {
         const auto modding_info = server_talker->get_modding_info();
 
         if (modding_info) {
-            // TODO: load mods
+            const auto loader = std::make_shared<server_mod_loader>(modding_info->serverID);
+
+            loader->load_packages();
         }
     } catch (const std::exception& exception) {
         MessageBoxA(nullptr, exception.what(), "Error", MB_OK | MB_ICONERROR);
