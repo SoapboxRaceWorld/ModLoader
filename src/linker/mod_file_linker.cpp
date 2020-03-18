@@ -60,7 +60,8 @@ mod_file_linker::add_link(std::shared_ptr<mod_package_item> item) { // NOLINT(pe
 void mod_file_linker::write_link_info_file(const fs::path &destination) {
     std::wofstream stream(destination, std::ios::trunc);
     for (const auto &link_info: m_link_info_list_) {
-        stream << link_info.source_path << '\t' << link_info.type << std::endl;
+        auto full_path = fs::current_path() / link_info.source_path;
+        stream << full_path.wstring() << '\t' << link_info.type << std::endl;
     }
 }
 
