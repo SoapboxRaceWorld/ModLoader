@@ -6,10 +6,13 @@
 #include "mod_package_header.hpp"
 #include "../utils.hpp"
 #include "../md5.hpp"
+#include "mod_loader_exception.hpp"
 #include <fstream>
+#include <memory>
 #include <utility>
 #include <bitextractor.hpp>
 #include <fmt/format.h>
+#include <bitarchiveinfo.hpp>
 
 static const unsigned char key_xor_table[] = {
         0x94, 0xce, 0xc3, 0xae, 0x73, 0xf9, 0xf1, 0xb9
@@ -72,13 +75,23 @@ std::shared_ptr<mod_package> mod_package_loader::load() {
     // Set up 7z interface
     bit7z::Bit7zLibrary lib(L"7z.dll");
     bit7z::BitExtractor extractor(lib, bit7z::BitFormat::Zip);
+    bit7z::BitArchiveInfo arc(lib, m_path_.wstring(), bit7z::BitFormat::Zip);
 
     if (!archive_key.empty()) {
         extractor.setPassword(utf8_to_wstring(archive_key));
     }
 
     const auto extraction_path = fs::current_path() / ".data" / md5(m_server_id_);
-    extractor.extract(m_path_.wstring(), extraction_path.wstring());
+//    extractor.extract(m_path_.wstring(), extraction_path.wstring());
 
-    return nullptr;
+    std::vector<std::shared_ptr<mod_package_item>> package_items;
+
+    for (auto &item : arc.items()) {
+        std::wstring path = item.path();
+        auto package_item = std::make_shared<mod_package_item>(path, mod_package_item_type::Directory);
+
+        package_items.emplace_back(package_item);
+    }
+
+    return std::make_shared<mod_package>(m_path_, package_items);
 }

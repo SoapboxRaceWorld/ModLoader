@@ -29,12 +29,15 @@ void server_mod_loader::load_packages() {
             }
 
             const auto loader = std::make_shared<mod_package_loader>(m_server_id_, const_cast<fs::path &>(path));
-            const auto package = loader->load();
+            std::shared_ptr<mod_package> package = loader->load();
 
             if (!package) {
                 throw mod_loader_exception(
                         fmt::format("Could not load package: {0}", path.filename().generic_string()));
             }
+
+            MessageBoxA(nullptr, fmt::format("Loaded {0} entries from {1}", package->get_items().size(),
+                                             package->get_name()).c_str(), "epic", MB_OK);
         }
     } else {
         throw mod_loader_exception(fmt::format("Could not find mods for server: {0}", m_server_id_));
