@@ -18,17 +18,22 @@ BOOL WINAPI InitializeModLoader() {
 
     if ((szArgList = CommandLineToArgvW(GetCommandLineW(), &argCount)) == nullptr) {
         MessageBoxW(nullptr, L"Failed to parse command line", L"Error", MB_OK | MB_ICONERROR);
-        return FALSE;
+        ExitProcess(1);
     }
 
     if (argCount != 5) {
         MessageBoxW(nullptr, L"Invalid command line", L"Error", MB_OK | MB_ICONERROR);
-        return FALSE;
+        ExitProcess(1);
     }
 
     const std::wstring server_url = szArgList[2];
     std::shared_ptr<mod_file_linker> linker = std::make_shared<mod_file_linker>();
     std::vector<mod_file_link_info> links;
+
+    if (fs::exists(".links")) {
+        MessageBoxW(nullptr, L".links file should not exist upon startup!", L"Error", MB_OK | MB_ICONERROR);
+        ExitProcess(1);
+    }
 
     try {
         const std::string cleaned_server_url = utf8_from_wstring(server_url);
