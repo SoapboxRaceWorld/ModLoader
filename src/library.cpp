@@ -4,6 +4,7 @@
 #include "loader/server_mod_loader.hpp"
 #include "linker/mod_file_linker.hpp"
 #include "patches/bypass_patches.hpp"
+#include "patches/custom_crash_handler.hpp"
 
 #include <shellapi.h>
 #include <iostream>
@@ -41,6 +42,7 @@ BOOL WINAPI InitializeModLoader() {
         // Apply patches and hooks
         Memory::Init();
         bypass_patches::apply();
+        crash_handler::install();
     } catch (const std::exception &exception) {
         MessageBoxA(nullptr, exception.what(), "Error", MB_OK | MB_ICONERROR);
         linker->revert_links(links);
