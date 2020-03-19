@@ -1,3 +1,6 @@
 [submodule "libraries/bit7z"]
 	path = libraries/bit7z
 	url = https://github.com/rikyoz/bit7z.git
+[submodule "libraries/detours"]
+	path = libraries/detours
+	url = https://github.com/microsoft/detours.git

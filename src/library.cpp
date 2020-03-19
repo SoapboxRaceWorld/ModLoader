@@ -3,9 +3,13 @@
 #include "server/servertalk.hpp"
 #include "loader/server_mod_loader.hpp"
 #include "linker/mod_file_linker.hpp"
+#include "patches/bypass_patches.hpp"
 
 #include <shellapi.h>
 #include <iostream>
+
+void load_server_mods(std::shared_ptr<mod_file_linker> &linker, std::vector<mod_file_link_info> &links,
+                      const std::shared_ptr<server::modding_info> &modding_info);
 
 BOOL WINAPI InitializeModLoader() {
     LPWSTR *szArgList;
@@ -31,17 +35,12 @@ BOOL WINAPI InitializeModLoader() {
         const auto modding_info = server_talker->get_modding_info();
 
         if (modding_info) {
-            const auto loader = std::make_shared<server_mod_loader>(modding_info->serverID);
-            std::vector<std::shared_ptr<mod_package>> packages = loader->load_packages();
-
-            for (std::shared_ptr<mod_package> &package : packages) {
-                for (const std::shared_ptr<mod_package_item> &package_entry : package->get_items()) {
-                    links.emplace_back(linker->add_link(package_entry));
-                }
-            }
-
-            linker->write_link_info_file(".links");
+            load_server_mods(linker, links, modding_info);
         }
+
+        // Apply patches and hooks
+        Memory::Init();
+        bypass_patches::apply();
     } catch (const std::exception &exception) {
         MessageBoxA(nullptr, exception.what(), "Error", MB_OK | MB_ICONERROR);
         linker->revert_links(links);
@@ -49,6 +48,20 @@ BOOL WINAPI InitializeModLoader() {
     }
 
     return TRUE;
+}
+
+void load_server_mods(std::shared_ptr<mod_file_linker> &linker, std::vector<mod_file_link_info> &links,
+                      const std::shared_ptr<server::modding_info> &modding_info) {
+    const auto loader = std::make_shared<server_mod_loader>(modding_info->serverID);
+    std::vector<std::shared_ptr<mod_package>> packages = loader->load_packages();
+
+    for (std::shared_ptr<mod_package> &package : packages) {
+        for (const std::shared_ptr<mod_package_item> &package_entry : package->get_items()) {
+            links.emplace_back(linker->add_link(package_entry));
+        }
+    }
+
+    linker->write_link_info_file(".links");
 }
 
 BOOL WINAPI ShutDownModLoader() {
