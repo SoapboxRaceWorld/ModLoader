@@ -77,9 +77,7 @@ std::shared_ptr<mod_package> mod_package_loader::load() {
     bit7z::BitExtractor extractor(lib, bit7z::BitFormat::Zip);
     bit7z::BitArchiveInfo arc(lib, m_path_.wstring(), bit7z::BitFormat::Zip);
 
-    if (!archive_key.empty()) {
-        extractor.setPassword(utf8_to_wstring(archive_key));
-    }
+    extractor.setPassword(utf8_to_wstring(archive_key));
 
     const auto extraction_path = fs::current_path() / ".data" / md5(m_server_id_);
     fs::create_directories(extraction_path);
