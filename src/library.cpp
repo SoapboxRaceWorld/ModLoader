@@ -21,7 +21,7 @@ BOOL WINAPI InitializeModLoader() {
         ExitProcess(1);
     }
 
-    if (argCount != 5) {
+    if (argCount < 5) {
         MessageBoxW(nullptr, L"Invalid command line", L"Error", MB_OK | MB_ICONERROR);
         ExitProcess(1);
     }
