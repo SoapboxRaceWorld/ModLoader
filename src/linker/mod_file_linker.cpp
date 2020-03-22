@@ -24,13 +24,13 @@ mod_file_linker::add_link(std::shared_ptr<mod_package_item> item) { // NOLINT(pe
                 std::wcout << L"\tGood to go for case #1 (backup and link)" << std::endl;
                 link_info.type = mod_file_link_type::FileLink;
 
-                if (fs::is_regular_file(local_path)) {
+                if (fs::exists(local_path)) {
                     // back up file
                     std::filesystem::path backup_path = local_path;
                     backup_path = backup_path.concat(".orig");
-                    if (!fs::exists(backup_path)) {
-                        fs::rename(local_path, backup_path);
-                    }
+//                    if (!fs::exists(backup_path)) {
+                    fs::rename(local_path, backup_path);
+//                    }
                 }
 
                 fs::create_hard_link(item->get_extracted_path(), local_path);
