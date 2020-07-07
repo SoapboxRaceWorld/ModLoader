@@ -23,9 +23,9 @@ BOOL WINAPI InitializeModLoader() {
 
     if (argCount < 5) {
         MessageBoxW(nullptr,
-                    L"NFSW.exe was launched with invalid command line parameters. (You probably intended to run GameLauncher.exe)",
+                    L"Game was launched with invalid command line parameters. (You probably intended to run the launcher.)",
                     L"Error", MB_OK | MB_ICONERROR);
-        ExitProcess(1);
+        ExitProcess(2);
     }
 
     const std::wstring server_url = szArgList[2];
@@ -34,7 +34,7 @@ BOOL WINAPI InitializeModLoader() {
 
     if (fs::exists(".links")) {
         MessageBoxW(nullptr, L".links file should not exist upon startup!", L"Error", MB_OK | MB_ICONERROR);
-        ExitProcess(1);
+        ExitProcess(3);
     }
 
     try {
@@ -53,7 +53,7 @@ BOOL WINAPI InitializeModLoader() {
     } catch (const std::exception &exception) {
         MessageBoxA(nullptr, exception.what(), "Error", MB_OK | MB_ICONERROR);
         linker->revert_links(links);
-        ExitProcess(1);
+        ExitProcess(4);
     }
 
     return TRUE;
