@@ -22,7 +22,9 @@ BOOL WINAPI InitializeModLoader() {
     }
 
     if (argCount < 5) {
-        MessageBoxW(nullptr, L"Invalid command line", L"Error", MB_OK | MB_ICONERROR);
+        MessageBoxW(nullptr,
+                    L"NFSW.exe was launched with invalid command line parameters. (You probably intended to run GameLauncher.exe)",
+                    L"Error", MB_OK | MB_ICONERROR);
         ExitProcess(1);
     }
 
