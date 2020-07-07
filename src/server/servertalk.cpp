@@ -2,14 +2,13 @@
 // Created by coder on 3/17/2020.
 //
 #include "servertalk.hpp"
-#include "servertalkexception.hpp"
 
 #define CPPHTTPLIB_ZLIB_SUPPORT
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 
 #include <wincrypt.h>
 #include "../httplib.hpp"
-//#include <cpr/cpr.h>
+#include "../url.hpp"
 #include <fmt/format.h>
 #include <utility>
 
@@ -17,14 +16,17 @@ server_talk::server_talk(std::string server_address) : m_server_address_(std::mo
 }
 
 std::shared_ptr<server::modding_info> server_talk::get_modding_info() {
-    auto res = httplib::Client2(m_server_address_.c_str()).set_decompress(true).Get("/Modding/GetModInfo");
+    // fix up address
+    Url u1(m_server_address_);
+    std::string address_base = fmt::format("{}://{}:{}", u1.scheme(), u1.host(), u1.port());
+
+    auto res = httplib::Client2(address_base.c_str()).set_decompress(true).Get(
+            (u1.path() + "/Modding/GetModInfo").c_str());
     auto body = res->body;
 
     if (res->status != 200 || body.empty()) {
         return nullptr;
     }
-
-    MessageBoxA(nullptr, body.c_str(), "debug", MB_OK);
 
     nlohmann::json j = nlohmann::json::parse(body);
 
