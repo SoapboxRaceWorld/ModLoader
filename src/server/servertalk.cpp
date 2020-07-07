@@ -7,10 +7,10 @@
 #define CPPHTTPLIB_ZLIB_SUPPORT
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 
+// No, this is not actually unused, it is necessary
 #include <wincrypt.h>
 #include "../httplib.hpp"
 #include "../url.hpp"
-//#include <cpr/cpr.h>
 #include <fmt/format.h>
 #include <utility>
 
@@ -26,13 +26,11 @@ std::shared_ptr<server::modding_info> server_talk::get_modding_info() {
     auto res = httplib::Client2(address_base.c_str()).set_decompress(true).Get(
             (u1.path() + "/Modding/GetModInfo").c_str());
     auto body = res->body;
-    MessageBoxA(nullptr, std::to_string(res->status).c_str(), "debug", MB_OK);
 
     if (res->status != 200 || body.empty()) {
         return nullptr;
     }
 
-    MessageBoxA(nullptr, body.c_str(), "debug", MB_OK);
 
     nlohmann::json j = nlohmann::json::parse(body);
 
