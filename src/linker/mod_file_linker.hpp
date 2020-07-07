@@ -8,6 +8,7 @@
 #include "../loader/mod_package_item.hpp"
 #include "mod_file_link_info.hpp"
 #include <vector>
+#include <map>
 
 class mod_file_linker {
 public:
@@ -27,6 +28,7 @@ public:
 
 private:
     std::vector<mod_file_link_info> m_link_info_list_;
+    std::map<fs::path, bool> m_link_map_;
 };
 
 
