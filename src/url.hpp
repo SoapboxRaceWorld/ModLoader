@@ -253,7 +253,6 @@ private:
     void build_url() const;
 
     void lazy_parse() const { if (!m_parse) parse_url(); }
-
     void parse_url() const;
 
     mutable std::string m_scheme;

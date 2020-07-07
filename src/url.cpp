@@ -450,7 +450,6 @@ namespace {
     class encode {
     public:
         encode(const std::string &s, std::uint8_t mask) : m_s(s), m_mask(mask) {}
-
     private:
         const std::string &m_s;
         std::uint8_t m_mask;
@@ -469,7 +468,6 @@ namespace {
     class encode_query_key {
     public:
         encode_query_key(const std::string &s, std::uint8_t mask) : m_s(s), m_mask(mask) {}
-
     private:
         const std::string &m_s;
         std::uint8_t m_mask;
@@ -498,7 +496,6 @@ namespace {
     class encode_query_val {
     public:
         encode_query_val(const std::string &s, std::uint8_t mask) : m_s(s), m_mask(mask) {}
-
     private:
         const std::string &m_s;
         std::uint8_t m_mask;
@@ -520,6 +517,7 @@ namespace {
             return o;
         }
     };
+
 
 
 } // end of anonymous namnespace
