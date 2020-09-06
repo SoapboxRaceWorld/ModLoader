@@ -11,43 +11,52 @@ mod_file_link_info
 mod_file_linker::add_link(std::shared_ptr<mod_package_item> item) { // NOLINT(performance-unnecessary-value-param)
     mod_file_link_info link_info{};
     fs::path local_path(item->get_archive_path());
+    fs::path extracted_path(item->get_extracted_path());
 
-    link_info.source_path = item->get_archive_path();
-    link_info.destination_path = item->get_extracted_path();
+    link_info.source_path = local_path;
+    link_info.destination_path = extracted_path;
+    link_info.type = mod_file_link_type::None;
 
-    if (item->get_type() == mod_package_item_type::File) {
-        if (local_path.has_parent_path()) {
-            // avoid double-links in the case of directories
-            if (!m_link_map_[local_path.parent_path()]) {
-                link_info.type = mod_file_link_type::FileLink;
+    // Ensure we are NOT trying to link a file twice. We only need to consider directories.
+    {
+        fs::path link_check_path = local_path;
+        bool already_linked = false;
 
-                if (fs::exists(local_path)) {
-                    // back up file
-                    std::filesystem::path backup_path = local_path;
-                    backup_path = backup_path.concat(".orig");
-                    if (!fs::exists(backup_path)) {
-                        fs::rename(local_path, backup_path);
-                    }
-                }
-
-                fs::create_hard_link(item->get_extracted_path(), local_path);
-            } else {
-                link_info.type = mod_file_link_type::None;
-                return link_info;
+        while (link_check_path.has_parent_path()) {
+            link_check_path = link_check_path.parent_path();
+            if (m_link_map_[link_check_path]) {
+                already_linked = true;
+                break;
             }
         }
-    } else {
-        if (!fs::is_directory(local_path)) {
-            link_info.type = mod_file_link_type::DirectoryLink;
-            fs::create_directory_symlink(item->get_extracted_path(), local_path);
-            m_link_map_[local_path] = true;
-        } else {
-            link_info.type = mod_file_link_type::None;
+
+        if (already_linked) {
             return link_info;
         }
     }
 
-    return this->add_link(link_info);
+    if (item->get_type() == mod_package_item_type::Directory) {
+        if (!fs::is_directory(local_path)) {
+            // Only try to link a directory if it doesn't already exist
+            fs::create_directory_symlink(extracted_path, local_path);
+            m_link_map_[local_path] = true;
+            link_info.type = mod_file_link_type::DirectoryLink;
+        } else {
+            // Nothing to do.
+            return link_info;
+        }
+    } else if (item->get_type() == mod_package_item_type::File) {
+        // Make a backup first.
+        if (fs::exists(local_path)) {
+            fs::rename(local_path, fs::path(local_path).concat(".orig"));
+        }
+
+        fs::create_hard_link(extracted_path, local_path);
+        link_info.type = mod_file_link_type::FileLink;
+    }
+
+    m_link_info_list_.emplace_back(link_info);
+    return link_info;
 }
 
 void mod_file_linker::write_link_info_file(const fs::path &destination) {
@@ -57,22 +66,11 @@ void mod_file_linker::write_link_info_file(const fs::path &destination) {
     }
 }
 
-mod_file_link_info mod_file_linker::add_link(mod_file_link_info item) {
-    m_link_info_list_.emplace_back(item);
-    return item;
-}
-
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 
 void mod_file_linker::revert_links() {
-    mod_file_linker::revert_links(m_link_info_list_);
-}
-
-#pragma clang diagnostic pop
-
-void mod_file_linker::revert_links(const std::vector<mod_file_link_info> &link_info_list) {
-    for (const auto &link_info: link_info_list) {
+    for (const auto &link_info: m_link_info_list_) {
         if (!fs::exists(link_info.source_path)) {
             continue;
         }
@@ -88,3 +86,5 @@ void mod_file_linker::revert_links(const std::vector<mod_file_link_info> &link_i
         }
     }
 }
+
+#pragma clang diagnostic pop

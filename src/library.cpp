@@ -52,7 +52,7 @@ BOOL WINAPI InitializeModLoader() {
         crash_handler::install();
     } catch (const std::exception &exception) {
         MessageBoxA(nullptr, exception.what(), "Error", MB_OK | MB_ICONERROR);
-        linker->revert_links(links);
+        linker->revert_links();
         ExitProcess(4);
     }
 
@@ -74,7 +74,6 @@ void load_server_mods(std::shared_ptr<mod_file_linker> &linker, std::vector<mod_
 }
 
 BOOL WINAPI ShutDownModLoader() {
-    // TODO: shutdown
     return TRUE;
 }
 
