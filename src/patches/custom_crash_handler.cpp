@@ -91,13 +91,13 @@ LONG WINAPI CustomTopLevelExceptionFilter(PEXCEPTION_POINTERS ExceptionInfo) {
     error_message += '\n';
     error_message += L"We hope to resolve your issue as soon as possible. Thanks for playing!";
 
+    WriteCrashMiniDump(ExceptionInfo, system_time, mini_filename);
+    WriteCrashTextDump(ExceptionInfo, system_time, text_filename);
     MessageBoxW(
             nullptr,
             error_message.c_str(),
             L"Critical error",
             MB_ICONERROR);
-    WriteCrashMiniDump(ExceptionInfo, system_time, mini_filename);
-    WriteCrashTextDump(ExceptionInfo, system_time, text_filename);
     TerminateProcess(GetCurrentProcess(), 1);
     return 1;
 }
